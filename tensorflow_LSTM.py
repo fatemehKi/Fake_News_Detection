@@ -18,9 +18,9 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-vocab_size = 40000
+vocab_size = 50000
 embedding_dim = 16
-max_length = 40000
+max_length = 50000
 trunc_type='post'
 padding_type='post'
 oov_tok = "<OOV>"
@@ -28,9 +28,13 @@ training_portion = .8
 
 df = pd.read_csv('data.csv')
 
+#df = df.sample(n=500)
 #########################cleaning Data set
-df=df.dropna()
 
+print(df.duplicated().sum())
+
+print(df.isnull().sum())
+df=df.dropna()
 #########################feature engineering 
 df['news'] = df.Headline + df.Body
 df.Label = df.Label.map({1: 'yes', 0: 'no'})
@@ -71,6 +75,8 @@ X=corpus
 X_train, X_test, y_train, y_test= train_test_split(X,y,test_size=0.2,random_state=0)
 
 
+
+
 tokenizer=Tokenizer(oov_token="<OOV>")
 tokenizer.fit_on_texts(X_train)
 word_index = tokenizer.word_index
@@ -86,11 +92,18 @@ label_tokenizer.fit_on_texts(y)
 #
 training_label_seq = np.array(label_tokenizer.texts_to_sequences(y_train))
 validation_label_seq = np.array(label_tokenizer.texts_to_sequences(y_test))
+#model = tf.keras.Sequential([
+#    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+#    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
+#    tf.keras.layers.Dense(24, activation='relu'),
+#    tf.keras.layers.Dense(1, activation='sigmoid')
+#])
+	
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
-    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
+    tf.keras.layers.GlobalAveragePooling1D(),
     tf.keras.layers.Dense(24, activation='relu'),
-    tf.keras.layers.Dense(1, activation='sigmoid')
+    tf.keras.layers.Dense(6, activation='softmax')
 ])
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.summary()
