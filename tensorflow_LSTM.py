@@ -18,7 +18,6 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
-
 vocab_size = 40000
 embedding_dim = 16
 max_length = 40000
@@ -96,7 +95,7 @@ model = tf.keras.Sequential([
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.summary()
 
-num_epochs = 30
+num_epochs = 10
 history = model.fit(train_padded, training_label_seq, epochs=num_epochs, validation_data=(validation_padded, validation_label_seq), verbose=2)
 
 
