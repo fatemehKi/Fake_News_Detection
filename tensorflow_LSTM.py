@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import nltk
 import re
+import matplotlib.pyplot as plt
 from nltk.tokenize import WhitespaceTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
@@ -71,8 +72,6 @@ X=corpus
 X_train, X_test, y_train, y_test= train_test_split(X,y,test_size=0.2,random_state=0)
 
 
-
-
 tokenizer=Tokenizer(oov_token="<OOV>")
 tokenizer.fit_on_texts(X_train)
 word_index = tokenizer.word_index
@@ -101,7 +100,7 @@ num_epochs = 30
 history = model.fit(train_padded, training_label_seq, epochs=num_epochs, validation_data=(validation_padded, validation_label_seq), verbose=2)
 
 
-import matplotlib.pyplot as plt
+
 
 
 def plot_graphs(history, string):
