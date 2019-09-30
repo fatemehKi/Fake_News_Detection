@@ -26,8 +26,6 @@ padding_type='post'
 oov_tok = "<OOV>"
 training_portion = .8
 
-
-
 df = pd.read_csv('data.csv')
 
 #########################cleaning Data set
@@ -92,15 +90,31 @@ training_label_seq = np.array(label_tokenizer.texts_to_sequences(y_train))
 validation_label_seq = np.array(label_tokenizer.texts_to_sequences(y_test))
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
-    tf.keras.layers.GlobalAveragePooling1D(),
+    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32)),
     tf.keras.layers.Dense(24, activation='relu'),
-    tf.keras.layers.Dense(6, activation='softmax')
+    tf.keras.layers.Dense(1, activation='sigmoid')
 ])
-model.compile(loss='sparse_categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
+model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.summary()
 
 num_epochs = 30
 history = model.fit(train_padded, training_label_seq, epochs=num_epochs, validation_data=(validation_padded, validation_label_seq), verbose=2)
+
+
+import matplotlib.pyplot as plt
+
+
+def plot_graphs(history, string):
+  plt.plot(history.history[string])
+  plt.plot(history.history['val_'+string])
+  plt.xlabel("Epochs")
+  plt.ylabel(string)
+  plt.legend([string, 'val_'+string])
+  plt.show()
+
+plot_graphs(history, 'acc')
+plot_graphs(history, 'loss')
+
 
 ###############################word cloud
 from wordcloud import WordCloud, STOPWORDS
