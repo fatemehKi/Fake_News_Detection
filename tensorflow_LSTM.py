@@ -98,6 +98,17 @@ validation_label_seq = np.array(label_tokenizer.texts_to_sequences(y_test))
 #    tf.keras.layers.Dense(24, activation='relu'),
 #    tf.keras.layers.Dense(1, activation='sigmoid')
 #])
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
+    tf.keras.layers.Bidirectional(tf.keras.layers.GRU(32)),
+    tf.keras.layers.Dense(6, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+model.summary()
+
+#########################################
 	
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
@@ -107,7 +118,7 @@ model = tf.keras.Sequential([
 ])
 model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.summary()
-
+############################################=
 num_epochs = 10
 history = model.fit(train_padded, training_label_seq, epochs=num_epochs, validation_data=(validation_padded, validation_label_seq), verbose=2)
 
